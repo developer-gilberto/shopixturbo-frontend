@@ -2,18 +2,17 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaBars, FaRightFromBracket } from 'react-icons/fa6';
 import { signOut } from '@/actions/auth';
 import { Logo } from '../ui/logo';
-import { ReportFilter } from '../ui/report-filter';
 
 interface HeaderProps {
   onToggle?: () => void;
   hasStore?: boolean;
+  shopLogo?: string | null;
 }
 
 const MENU_ITEMS: Array<{
@@ -22,8 +21,11 @@ const MENU_ITEMS: Array<{
   href?: string;
 }> = [{ label: 'minha conta', Icon: FaUserCircle, href: '/my-account' }];
 
-export function Header({ onToggle, hasStore = true }: HeaderProps) {
-  const pathname = usePathname();
+export function Header({
+  onToggle,
+  hasStore = true,
+  shopLogo = null,
+}: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +54,7 @@ export function Header({ onToggle, hasStore = true }: HeaderProps) {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 flex min-h-16 items-center justify-between gap-2 bg-card-bg border-b border-card-border px-4 py-2 shadow-card">
+    <header className="sticky top-0 z-50 flex min-h-16 items-center justify-between gap-2 bg-card-bg border-b border-card-border px-4 py-2 shadow-card print:hidden">
       <div className="flex items-center gap-2">
         {onToggle ? (
           <button
@@ -69,9 +71,7 @@ export function Header({ onToggle, hasStore = true }: HeaderProps) {
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-wrap items-center justify-center gap-2 px-2 md:px-4">
-        {pathname === '/dashboard' ? <ReportFilter /> : null}
-      </div>
+      <div className="flex flex-1 flex-wrap items-center justify-center gap-2 px-2 md:px-4" />
 
       <div ref={menuRef} className="relative">
         <button
@@ -80,15 +80,19 @@ export function Header({ onToggle, hasStore = true }: HeaderProps) {
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           aria-label="Menu da loja"
-          className="border-2 border-card-bg hover:border-primary-hover cursor-pointer rounded-full transition-opacity hover:opacity-80"
+          className="border-2 border-card-bg hover:border-label cursor-pointer rounded-full transition-opacity hover:opacity-80"
         >
-          <Image
-            src="/assets/logo/logo-180x180.png"
-            alt="Imagem da loja"
-            width={40}
-            height={40}
-            className="h-10 w-10 rounded-full object-cover"
-          />
+          {shopLogo ? (
+            <Image
+              src={shopLogo}
+              alt="Imagem da loja"
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-full object-cover"
+            />
+          ) : (
+            <FaUserCircle className="h-10 w-10 text-label" />
+          )}
         </button>
 
         {menuOpen ? (

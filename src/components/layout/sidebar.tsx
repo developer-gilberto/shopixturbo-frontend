@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaSyncAlt } from 'react-icons/fa';
 import {
   HiOutlineClipboardList,
   HiOutlineCube,
   HiOutlineHome,
   HiOutlineUser,
 } from 'react-icons/hi';
+import { SyncProductsButton } from '@/components/ui/sync-products-button';
 
 interface SidebarProps {
   open: boolean;
@@ -37,7 +37,7 @@ export function Sidebar({ open, onClose, hasStore }: SidebarProps) {
       ) : null}
 
       <aside
-        className={`fixed left-0 top-16 bottom-0 z-40 flex w-72 flex-col justify-between bg-card-bg border-r border-card-border p-4 shadow-card transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-16 bottom-0 z-40 flex w-72 flex-col justify-between bg-card-bg border-r border-card-border p-4 shadow-card transition-transform duration-300 ease-in-out print:hidden ${
           open ? 'translate-x-0' : 'max-md:-translate-x-full'
         }`}
       >
@@ -71,12 +71,7 @@ export function Sidebar({ open, onClose, hasStore }: SidebarProps) {
           })}
         </nav>
 
-        <button
-          type="button"
-          className="flex items-center gap-2 bg-primary-base text-white font-bold rounded-btn-input py-2 px-4 hover:bg-primary-hover cursor-pointer"
-        >
-          <FaSyncAlt /> Sincronizar dados
-        </button>
+        {pathname === '/products' ? <SyncProductsButton /> : null}
       </aside>
     </>
   );
