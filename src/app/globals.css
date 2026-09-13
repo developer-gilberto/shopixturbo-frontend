@@ -143,3 +143,34 @@ body {
   background: var(--color-page-bg);
   color: var(--color-text-body);
 }
+
+@media print {
+  body {
+    background: #ffffff;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .plain-report,
+  .plain-report * {
+    visibility: visible;
+  }
+
+  .plain-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+}

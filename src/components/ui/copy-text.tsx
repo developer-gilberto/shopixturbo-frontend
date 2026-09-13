@@ -30,7 +30,7 @@ export function CopyText({ label, value }: CopyTextProps) {
         type="button"
         onClick={handleCopy}
         aria-label={`Copiar ${label}`}
-        className="group relative flex items-center cursor-pointer"
+        className="group relative flex items-center cursor-pointer print:hidden"
       >
         {copied ? (
           <LuCheck className="text-xs text-profit" />

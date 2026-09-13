@@ -1,17 +1,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { redirect } from 'next/navigation';
+import { FaExclamationTriangle, FaTrophy } from 'react-icons/fa';
 import { FaSackDollar } from 'react-icons/fa6';
 import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
 import { LuClipboardList } from 'react-icons/lu';
 import { TbDatabaseDollar } from 'react-icons/tb';
 import { ConnectShopeeButton } from '@/components/ui/connect-shopee-button';
 import { CopyText } from '@/components/ui/copy-text';
-import {
-  DEFAULT_ORDER_STATUS,
-  ORDER_STATUSES,
-} from '@/components/ui/order-status-options';
+import { ORDER_STATUSES } from '@/components/ui/order-status-options';
+import { PlainReport } from '@/components/ui/plain-report';
+import { PrintReportButton } from '@/components/ui/print-report-button';
 import { verifySession } from '@/lib/dal';
+import { generateReportText } from '@/lib/report-text';
 import { getShopIdFromCookie, getTokenFromCookie } from '@/lib/session';
 
 interface OrderItem {
@@ -136,15 +137,17 @@ function marginPercent(rank: ProductRank): string {
     : formatPercent(0);
 }
 
+function unitValue(value: number, quantity: number): number {
+  return quantity > 0 ? value / quantity : 0;
+}
+
 function rankLabel(index: number): string {
   return String(index + 1).padStart(2, '0');
 }
 
-function clampIntervalDays(raw: string | undefined): number {
-  const parsed = Number(raw);
-  if (!Number.isInteger(parsed)) return 7;
-  return Math.min(Math.max(parsed, 1), 30);
-}
+const DEFAULT_ORDER_STATUS = 'READY_TO_SHIP';
+const DEFAULT_INTERVAL_DAYS = 15;
+const DEFAULT_PAGE_SIZE = 50;
 
 export default async function Dashboard({
   searchParams,
@@ -155,17 +158,13 @@ export default async function Dashboard({
   }>;
 }) {
   const params = await searchParams;
-  const rawInterval = Array.isArray(params.interval_days)
-    ? params.interval_days[0]
-    : params.interval_days;
-  const intervalDays = clampIntervalDays(rawInterval);
 
-  const rawStatus = Array.isArray(params.order_status)
-    ? params.order_status[0]
-    : params.order_status;
-  const orderStatus = ORDER_STATUSES.some(({ value }) => value === rawStatus)
-    ? rawStatus
-    : DEFAULT_ORDER_STATUS;
+  if (Object.keys(params).length > 0) {
+    redirect('/dashboard');
+  }
+
+  const intervalDays = DEFAULT_INTERVAL_DAYS;
+  const orderStatus = DEFAULT_ORDER_STATUS;
 
   const { user } = await verifySession();
   const token = await getTokenFromCookie();
@@ -193,7 +192,7 @@ export default async function Dashboard({
   let data: OrdersResponse;
 
   try {
-    const url = `${process.env.BACKEND_URL}/report/orders/${shopId}?offset=0&page_size=50&order_status=${orderStatus}&time_range_field=update_time&interval_days=${intervalDays}`;
+    const url = `${process.env.BACKEND_URL}/report/orders/${shopId}?offset=0&page_size=${DEFAULT_PAGE_SIZE}&order_status=${orderStatus}&time_range_field=update_time&interval_days=${intervalDays}`;
 
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -296,6 +295,38 @@ export default async function Dashboard({
     image_url: productImageByItemId.get(String(item.item_id)),
   }));
 
+  const reportText = generateReportText({
+    shopName: user.shop?.name ?? 'Sem loja',
+    marketplace: user.shop?.marketplace ?? 'shopee',
+    userName: user.name,
+    intervalDays,
+    totalOrders: summary.total_orders,
+    totalRevenue: summary.total_revenue,
+    totalItemsCost: summary.total_items_cost,
+    totalGovernmentTaxes: summary.total_government_taxes,
+    totalShopeeCommission: summary.total_shopee_commission,
+    totalShipping: summary.total_shipping,
+    totalCost: summary.total_cost,
+    totalNetProfit: summary.total_net_profit,
+    topSelling: topSelling[0] ?? null,
+    topProfitable: topProfitable[0] ?? null,
+    sellingRanking: topSelling.map((item) => ({
+      itemId: item.item_id,
+      name: item.name,
+      sku: item.sku,
+      quantity: item.quantity,
+      revenue: item.revenue,
+    })),
+    profitableRanking: topProfitable.map((item) => ({
+      itemId: item.item_id,
+      name: item.name,
+      sku: item.sku,
+      quantity: item.quantity,
+      net_profit: item.net_profit,
+      revenue: item.revenue,
+    })),
+  });
+
   const missingProductsCount = (summary.products_with_missing_cost_data ?? [])
     .length;
   const missingSkusCount = summary.unmatched_item_skus.length;
@@ -386,7 +417,13 @@ export default async function Dashboard({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:space-y-0">
+      <PlainReport text={reportText} />
+      <div className="flex items-center justify-between gap-4 print:hidden">
+        <h1 className="text-2xl font-extrabold text-heading">Dashboard</h1>
+        <PrintReportButton reportText={reportText} />
+      </div>
+
       {showAlert ? (
         <div className="flex items-center justify-between gap-4 rounded-card bg-alert-bg border-l-4 border-l-primary-pressed p-4">
           <div className="flex items-center gap-3">
@@ -397,7 +434,7 @@ export default async function Dashboard({
           </div>
           <Link
             href={cadastrarHref}
-            className="shrink-0 text-xs font-black uppercase text-alert-text underline decoration-2 underline-offset-4 hover:opacity-80"
+            className="shrink-0 text-xs font-black uppercase text-alert-text underline decoration-2 underline-offset-4 hover:opacity-80 print:hidden"
           >
             Cadastrar
           </Link>
@@ -512,7 +549,10 @@ export default async function Dashboard({
         {/* Produtos Mais Vendidos */}
         <section className="overflow-hidden rounded-card bg-card-bg shadow-card">
           <div className="flex items-center justify-between font-extrabold uppercase border-b border-card-border p-6">
-            <h3 className="font-bold text-heading">Produtos mais vendidos</h3>
+            <h3 className="flex items-center gap-2 font-bold text-heading">
+              <FaTrophy className="text-primary-base" />
+              Produtos mais vendidos
+            </h3>
             <span className="text-xs font-bold uppercase text-label">
               Qtd Vendida
             </span>
@@ -556,7 +596,8 @@ export default async function Dashboard({
                       {formatNumber(product.quantity)} unid
                     </p>
                     <p className="text-[10px] font-bold text-profit">
-                      {formatBRL(product.revenue)}
+                      preço unid.{' '}
+                      {formatBRL(unitValue(product.revenue, product.quantity))}
                     </p>
                   </div>
                 </div>
@@ -568,7 +609,10 @@ export default async function Dashboard({
         {/* Produtos Mais Lucrativos */}
         <section className="overflow-hidden rounded-card bg-card-bg shadow-card">
           <div className="flex items-center justify-between font-extrabold uppercase border-b border-card-border p-6">
-            <h3 className="font-bold text-heading">Produtos mais lucrativos</h3>
+            <h3 className="flex items-center gap-2 font-bold text-heading">
+              <FaSackDollar className="text-profit" />
+              Produtos mais lucrativos
+            </h3>
             <span className="text-xs font-bold uppercase text-label">
               Margem %
             </span>
@@ -612,7 +656,10 @@ export default async function Dashboard({
                       {marginPercent(product)} Margem
                     </p>
                     <p className="text-[10px] font-bold text-label">
-                      Lucro: {formatBRL(product.net_profit)}
+                      Lucro unid.{' '}
+                      {formatBRL(
+                        unitValue(product.net_profit, product.quantity),
+                      )}
                     </p>
                   </div>
                 </div>
