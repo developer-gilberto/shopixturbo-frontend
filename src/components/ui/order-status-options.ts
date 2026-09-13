@@ -10,3 +10,11 @@ export const ORDER_STATUSES: { value: string; label: string }[] = [
 ];
 
 export const DEFAULT_ORDER_STATUS = 'READY_TO_SHIP';
+
+export const INTERVAL_DAYS_OPTIONS: { value: string; label: string }[] = [
+  { value: '1', label: 'Hoje' },
+  { value: '7', label: '7 dias' },
+  { value: '15', label: '15 dias' },
+];
+
+export const DEFAULT_INTERVAL_DAYS = '15';
