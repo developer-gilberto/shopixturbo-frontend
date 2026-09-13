@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+:root {
+  /* ---------------------------------------------------------------------
+     PRIMARY — cor da marca.
+     --------------------------------------------------------------------- */
+  --color-primary-100: #fcdbd5; /* soft */
+  --color-primary-300: #f69d8c; /* mutted */
+  --color-primary-500: #ee4d2d; /* cor base */
+  --color-primary-600: #d64529; /* hover */
+  --color-primary-700: #b33a22; /* pressed */
+
+  /* ---------------------------------------------------------------------
+     Segmentos do gráfico "Visão Geral de Custos"
+     --------------------------------------------------------------------- */
+  --color-graphic-cost: #b33a22; /* Custos */
+  --color-graphic-tax: #8f2e9f; /* Impostos */
+  --color-graphic-fee-shopee: #e8791e; /* Tarifa Shopee */
+  --color-graphic-shipping: #d9a62c; /* Frete */
+  --color-graphic-profit: #3e9fe0; /* Lucro Líquido */
+
+  /* ---------------------------------------------------------------------
+     Indicadores de lucro/prejuizo
+     --------------------------------------------------------------------- */
+  --color-profit: #22a55a;
+  --color-prejudice: var(--color-graphic-cost);
+
+  /* ---------------------------------------------------------------------
+     Banner de alerta (ex: "3 produtos sem custo cadastrado")
+     --------------------------------------------------------------------- */
+  --color-alert-bg: #f3c6c2;
+  --color-alert-text: var(--color-primary-700);
+
+  /* ---------------------------------------------------------------------
+     Badge (ex: "Oficial Partner Shopee")
+     --------------------------------------------------------------------- */
+  --color-badge-bg: #dceefb;
+  --color-badge-text: #1c6e8c;
+
+  /* ---------------------------------------------------------------------
+     Texto — nomeado pelo papel que exerce, não pelo peso/escala
+     --------------------------------------------------------------------- */
+  --color-text-heading: #1f2126; /* títulos, valores em destaque (R$ 45.280) */
+  --color-text-body: #4b4f58; /* texto corrido */
+  --color-text-label: #6b7280; /* labels uppercase, refs de produto */
+  --color-text-subtitle: #9ca3af; /* placeholders, texto auxiliar */
+
+  /* ---------------------------------------------------------------------
+     Superfícies — nomeadas pelo componente que preenchem
+     --------------------------------------------------------------------- */
+  --color-card-bg: #ffffff; /* cards, header, painéis */
+  --color-btn-muted: #f1f2f4; /* pill inativo, ex: "30 dias" */
+  --color-nav-active-bg: #ee4d2d; /* item de menu ativo na sidebar */
+  --color-page-bg: #f5f6f8; /* fundo geral da página */
+
+  /* ---------------------------------------------------------------------
+     Bordas
+     --------------------------------------------------------------------- */
+  --color-card-border: #e7e8eb;
+  --color-card-border-strong: #d8dadf;
+
+  /* ---------------------------------------------------------------------
+     Raio de borda
+     --------------------------------------------------------------------- */
+  --radius-card: 1rem; /* cards principais */
+  --radius-btn-input: 0.7rem; /* inputs, botões, stat cards */
+
+  /* ---------------------------------------------------------------------
+     Sombras
+     --------------------------------------------------------------------- */
+  --shadow-card:
+    0 1px 3px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(16, 24, 40, 0.04);
+  --shadow-btn-primary: 0 8px 20px rgba(238, 77, 45, 0.3);
+}
+
+@theme inline {
+  --color-page-bg: var(--color-page-bg);
+
+  --color-primary-soft: var(--color-primary-100);
+  --color-primary-mutted: var(--color-primary-300);
+  --color-primary-base: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  --color-primary-pressed: var(--color-primary-700);
+
+  --color-graphic-cost: var(--color-graphic-cost);
+  --color-graphic-tax: var(--color-graphic-tax);
+  --color-graphic-fee-shopee: var(--color-graphic-fee-shopee);
+  --color-graphic-shipping: var(--color-graphic-shipping);
+  --color-graphic-profit: var(--color-graphic-profit);
+
+  --color-profit: var(--color-profit);
+  --color-prejudice: var(--color-prejudice);
+
+  --color-alert-bg: var(--color-alert-bg);
+  --color-alert-text: var(--color-alert-text);
+
+  --color-badge-bg: var(--color-badge-bg);
+  --color-badge-text: var(--color-badge-text);
+
+  --color-heading: var(--color-text-heading);
+  --color-body: var(--color-text-body);
+  --color-label: var(--color-text-label);
+  --color-subtitle: var(--color-text-subtitle);
+
+  --color-card-bg: var(--color-card-bg);
+  --color-btn-muted: var(--color-btn-muted);
+  --color-nav-active-bg: var(--color-nav-active-bg);
+
+  --color-card-border: var(--color-card-border);
+  --color-card-border-strong: var(--color-card-border-strong);
+
+  --radius-card: var(--radius-card);
+  --radius-btn-input: var(--radius-btn-input);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-btn-primary: var(--shadow-btn-primary);
+}
+
+@theme {
+  --animate-attention: attention-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes attention-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgb(238 77 45 / 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 14px rgb(238 77 45 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(238 77 45 / 0);
+    }
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-text-body: #4b4f58;
+    --color-page-bg: #f5f6f8;
+  }
+}
+
+body {
+  background: var(--color-page-bg);
+  color: var(--color-text-body);
+}
