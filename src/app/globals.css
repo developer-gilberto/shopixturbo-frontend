@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
+
   /* ---------------------------------------------------------------------
      PRIMARY — cor da marca.
      --------------------------------------------------------------------- */
@@ -132,11 +136,45 @@
   }
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-text-body: #4b4f58;
-    --color-page-bg: #f5f6f8;
-  }
+.dark {
+  --color-primary-100: #3a1e18; /* soft */
+  --color-primary-300: #b3563f; /* mutted */
+  --color-primary-500: #ff5a3c; /* cor base */
+  --color-primary-600: #ff7358; /* hover */
+  --color-primary-700: #d64529; /* pressed */
+
+  --color-graphic-cost: #ff7a5c; /* Custos */
+  --color-graphic-tax: #c77dda; /* Impostos */
+  --color-graphic-fee-shopee: #f5a04a; /* Tarifa Shopee */
+  --color-graphic-shipping: #e6c057; /* Frete */
+  --color-graphic-profit: #5cb8f2; /* Lucro Líquido */
+
+  --color-profit: #3ecf7a;
+  --color-prejudice: var(--color-graphic-cost);
+
+  --color-alert-bg: #3d1f1a;
+  --color-alert-text: #ff9d8a;
+
+  --color-badge-bg: #16303f;
+  --color-badge-text: #7cc4e8;
+
+  --color-text-heading: #f4f5f7;
+  --color-text-body: #c3c8d1;
+  --color-text-label: #98a0ac;
+  --color-text-subtitle: #6f7784;
+
+  --color-card-bg: #1a1d23;
+  --color-btn-muted: #262a31;
+  --color-nav-active-bg: #ff5a3c;
+  --color-page-bg: #0f1115;
+
+  --color-card-border: #2b3038;
+  --color-card-border-strong: #3a404a;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-btn-primary: 0 8px 20px rgba(255, 90, 60, 0.3);
+
+  color-scheme: dark;
 }
 
 body {

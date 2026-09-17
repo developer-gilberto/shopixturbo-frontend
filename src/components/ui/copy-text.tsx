@@ -39,7 +39,7 @@ export function CopyText({ label, value, labelClassName }: CopyTextProps) {
           <LuCopy className="text-xs text-label group-hover:text-primary-base" />
         )}
         <span
-          className={`pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-btn-input bg-heading px-2 py-1 text-[10px] font-bold text-white shadow-card transition-opacity ${
+          className={`pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-btn-input bg-black/75 px-2 py-1 text-[10px] font-bold text-white shadow-card transition-opacity ${
             copied ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
         >

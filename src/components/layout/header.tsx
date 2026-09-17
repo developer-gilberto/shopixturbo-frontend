@@ -7,6 +7,7 @@ import type { IconType } from 'react-icons';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaBars, FaRightFromBracket } from 'react-icons/fa6';
 import { signOut } from '@/actions/auth';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Logo } from '../ui/logo';
 
 interface HeaderProps {
@@ -73,78 +74,82 @@ export function Header({
 
       <div className="flex flex-1 flex-wrap items-center justify-center gap-2 px-2 md:px-4" />
 
-      <div ref={menuRef} className="relative">
-        <button
-          type="button"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-haspopup="menu"
-          aria-expanded={menuOpen}
-          aria-label="Menu da loja"
-          className="border-2 border-card-bg hover:border-label cursor-pointer rounded-full transition-opacity hover:opacity-80"
-        >
-          {shopLogo ? (
-            <Image
-              src={shopLogo}
-              alt="Imagem da loja"
-              width={40}
-              height={40}
-              className="h-10 w-10 rounded-full object-cover"
-            />
-          ) : (
-            <FaUserCircle className="h-10 w-10 text-label" />
-          )}
-        </button>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
 
-        {menuOpen ? (
-          <div
-            role="menu"
-            className="absolute right-0 top-12 z-50 w-56 overflow-hidden rounded-card bg-card-bg border border-card-border shadow-card"
+        <div ref={menuRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            aria-label="Menu da loja"
+            className="border-2 border-card-bg hover:border-label cursor-pointer rounded-full transition-opacity hover:opacity-80"
           >
-            <div className="divide-y divide-card-border">
-              {MENU_ITEMS.map(({ label, Icon, href }) =>
-                href ? (
-                  <Link
-                    key={label}
-                    href={href}
-                    role="menuitem"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex w-full items-center gap-3 p-3 text-sm font-bold text-body hover:bg-btn-muted"
-                  >
-                    <Icon className="text-lg text-label" />
-                    {label}
-                    {!hasStore && href === '/my-account' ? (
-                      <span className="relative ml-auto flex h-2.5 w-2.5">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-base opacity-75" />
-                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary-base" />
-                      </span>
-                    ) : null}
-                  </Link>
-                ) : (
+            {shopLogo ? (
+              <Image
+                src={shopLogo}
+                alt="Imagem da loja"
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            ) : (
+              <FaUserCircle className="h-10 w-10 text-label" />
+            )}
+          </button>
+
+          {menuOpen ? (
+            <div
+              role="menu"
+              className="absolute right-0 top-12 z-50 w-56 overflow-hidden rounded-card bg-card-bg border border-card-border shadow-card"
+            >
+              <div className="divide-y divide-card-border">
+                {MENU_ITEMS.map(({ label, Icon, href }) =>
+                  href ? (
+                    <Link
+                      key={label}
+                      href={href}
+                      role="menuitem"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex w-full items-center gap-3 p-3 text-sm font-bold text-body hover:bg-btn-muted"
+                    >
+                      <Icon className="text-lg text-label" />
+                      {label}
+                      {!hasStore && href === '/my-account' ? (
+                        <span className="relative ml-auto flex h-2.5 w-2.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-base opacity-75" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary-base" />
+                        </span>
+                      ) : null}
+                    </Link>
+                  ) : (
+                    <button
+                      key={label}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex w-full items-center gap-3 p-3 text-sm font-bold text-body hover:bg-btn-muted cursor-pointer"
+                    >
+                      <Icon className="text-lg text-label" />
+                      {label}
+                    </button>
+                  ),
+                )}
+                <form action={signOut}>
                   <button
-                    key={label}
-                    type="button"
+                    type="submit"
                     role="menuitem"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex w-full items-center gap-3 p-3 text-sm font-bold text-body hover:bg-btn-muted cursor-pointer"
+                    className="flex w-full items-center gap-3 p-3 text-sm font-bold text-alert-text hover:bg-btn-muted cursor-pointer"
                   >
-                    <Icon className="text-lg text-label" />
-                    {label}
+                    <FaRightFromBracket className="text-lg text-label" />
+                    Sair
                   </button>
-                ),
-              )}
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  role="menuitem"
-                  className="flex w-full items-center gap-3 p-3 text-sm font-bold text-alert-text hover:bg-btn-muted cursor-pointer"
-                >
-                  <FaRightFromBracket className="text-lg text-label" />
-                  Sair
-                </button>
-              </form>
+                </form>
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </header>
   );

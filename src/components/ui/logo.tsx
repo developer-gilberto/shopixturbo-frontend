@@ -6,7 +6,13 @@ interface LogoProps extends Omit<ImageProps, 'src' | 'alt'> {
   logoFull?: boolean;
 }
 
-export function Logo({ logoFull = false, width, height, ...props }: LogoProps) {
+export function Logo({
+  logoFull = false,
+  width,
+  height,
+  className,
+  ...props
+}: LogoProps) {
   const src = logoFull
     ? '/assets/logo/logo-full-866x288.png'
     : '/assets/logo/logo-512x512.png';
@@ -24,6 +30,7 @@ export function Logo({ logoFull = false, width, height, ...props }: LogoProps) {
       priority
       width={width}
       height={resolvedHeight}
+      className={className}
       {...props}
     />
   );
