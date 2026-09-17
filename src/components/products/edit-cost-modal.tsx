@@ -72,8 +72,7 @@ export function EditCostModal({
   const costPriceCents = parseCurrencyToCents(costValue);
   const taxPercent = parseDecimalInput(taxInput);
   const governmentTaxesCents = Math.round((salePriceCents * taxPercent) / 100);
-  const totalCostCents = costPriceCents + governmentTaxesCents;
-  const netProfitCents = salePriceCents - totalCostCents;
+  const netProfitCents = salePriceCents - costPriceCents - governmentTaxesCents;
   const marginPercent =
     salePriceCents > 0 ? (netProfitCents / salePriceCents) * 100 : 0;
 
@@ -260,9 +259,15 @@ export function EditCostModal({
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-subtitle">Total de custos</dt>
+                <dt className="text-subtitle">Custo do produto</dt>
                 <dd className="font-bold text-heading">
-                  {formatBRL(totalCostCents)}
+                  {formatBRL(costPriceCents)}
+                </dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-subtitle">Imposto</dt>
+                <dd className="font-bold text-heading">
+                  {formatBRL(governmentTaxesCents)}
                 </dd>
               </div>
               <div className="flex justify-between">
