@@ -71,7 +71,7 @@ export function PrintReportButton({
     setMenuOpen(false);
     const subject = encodeURIComponent('Relatório ShopixTurbo');
     const body = encodeURIComponent(reportText);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
   }
 
   return (

@@ -1,11 +1,3 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { FaExclamationTriangle, FaTrophy } from 'react-icons/fa';
-import { FaSackDollar } from 'react-icons/fa6';
-import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
-import { LuClipboardList } from 'react-icons/lu';
-import { TbDatabaseDollar } from 'react-icons/tb';
 import { ConnectShopeeButton } from '@/components/ui/connect-shopee-button';
 import { CopyText } from '@/components/ui/copy-text';
 import { ORDER_STATUSES } from '@/components/ui/order-status-options';
@@ -14,6 +6,15 @@ import { PrintReportButton } from '@/components/ui/print-report-button';
 import { verifySession } from '@/lib/dal';
 import { generateReportText } from '@/lib/report-text';
 import { getShopIdFromCookie, getTokenFromCookie } from '@/lib/session';
+import Image from 'next/image';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { FaExclamationTriangle, FaTrophy } from 'react-icons/fa';
+import { FaSackDollar } from 'react-icons/fa6';
+import { HiOutlineCube } from 'react-icons/hi';
+import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
+import { LuClipboardList } from 'react-icons/lu';
+import { TbDatabaseDollar } from 'react-icons/tb';
 
 interface OrderItem {
   item_id: number;
@@ -145,7 +146,9 @@ function rankLabel(index: number): string {
   return String(index + 1).padStart(2, '0');
 }
 
-const DEFAULT_ORDER_STATUS = 'READY_TO_SHIP';
+const DEFAULT_ORDER_STATUS = 'SHIPPED';
+// const DEFAULT_ORDER_STATUS = 'PROCESSED';
+// const DEFAULT_ORDER_STATUS = 'READY_TO_SHIP';
 const DEFAULT_INTERVAL_DAYS = 15;
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -334,7 +337,7 @@ export default async function Dashboard({
 
   const alertMessage =
     missingSkusCount > 0
-      ? `${missingSkusCount} ${missingSkusCount === 1 ? 'produto sem' : 'produtos sem'} o preço de custo cadastrado. Cadastre agora para ter precisão no lucro.`
+      ? `${missingSkusCount} ${missingSkusCount === 1 ? 'produto sem' : 'produtos sem'} dados de custo cadastrado. Cadastre agora para ter precisão no lucro.`
       : `${missingProductsCount} ${missingProductsCount === 1 ? 'produto sem' : 'produtos sem'} dados de custo cadastrado. Cadastre os custos para ter precisão no lucro.`;
 
   const missingProductIds = summary.products_with_missing_cost_data ?? [];
@@ -581,7 +584,9 @@ export default async function Dashboard({
                         className="h-12 w-12 shrink-0 rounded-btn-input object-cover"
                       />
                     ) : (
-                      <div className="h-12 w-12 shrink-0 rounded-btn-input bg-btn-muted" />
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-btn-input bg-btn-muted">
+                        <HiOutlineCube className="h-6 w-6 text-subtitle" />
+                      </div>
                     )}
                     <div className="min-w-0">
                       <p className="max-w-45 truncate text-sm font-bold text-body">
@@ -641,7 +646,9 @@ export default async function Dashboard({
                         className="h-12 w-12 shrink-0 rounded-btn-input object-cover"
                       />
                     ) : (
-                      <div className="h-12 w-12 shrink-0 rounded-btn-input bg-btn-muted" />
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-btn-input bg-btn-muted">
+                        <HiOutlineCube className="h-6 w-6 text-subtitle" />
+                      </div>
                     )}
                     <div className="min-w-0">
                       <p className="max-w-45 truncate text-sm font-bold text-body">
