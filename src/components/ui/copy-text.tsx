@@ -6,9 +6,10 @@ import { LuCheck, LuCopy } from 'react-icons/lu';
 interface CopyTextProps {
   label: string;
   value: string;
+  labelClassName?: string;
 }
 
-export function CopyText({ label, value }: CopyTextProps) {
+export function CopyText({ label, value, labelClassName }: CopyTextProps) {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,7 +26,7 @@ export function CopyText({ label, value }: CopyTextProps) {
 
   return (
     <p className="flex items-center gap-1 text-[10px] font-medium text-label">
-      {label}: {value}
+      <span className={labelClassName}>{label}:</span> {value}
       <button
         type="button"
         onClick={handleCopy}

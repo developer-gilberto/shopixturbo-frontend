@@ -9,6 +9,8 @@ export const ORDER_STATUSES: { value: string; label: string }[] = [
   { value: 'INVOICE_PENDING', label: 'Fatura pendente' },
 ];
 
+// export const DEFAULT_ORDER_STATUS = 'SHIPPED';
+// export const DEFAULT_ORDER_STATUS = 'PROCESSED';
 export const DEFAULT_ORDER_STATUS = 'READY_TO_SHIP';
 
 export const INTERVAL_DAYS_OPTIONS: { value: string; label: string }[] = [
