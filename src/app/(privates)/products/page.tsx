@@ -109,14 +109,14 @@ function SearchResultRow({ product }: { product: Product }) {
         <span className="w-20 shrink-0 text-center text-[10px] font-bold uppercase text-label">
           Estoque
         </span>
-        <span className="w-24 shrink-0 text-center text-[10px] font-bold uppercase text-label">
-          Venda
+        <span className="w-28 shrink-0 text-center text-[10px] font-bold uppercase text-label">
+          Preço de venda
+        </span>
+        <span className="w-28 shrink-0 text-center text-[10px] font-bold uppercase text-label">
+          Custo do produto
         </span>
         <span className="w-24 shrink-0 text-center text-[10px] font-bold uppercase text-label">
-          Impostos (%)
-        </span>
-        <span className="w-24 shrink-0 text-center text-[10px] font-bold uppercase text-label">
-          Custo
+          Impostos
         </span>
         <span className="w-16 shrink-0 text-center text-[10px] font-bold uppercase text-label">
           Status
@@ -163,7 +163,7 @@ function SearchResultRow({ product }: { product: Product }) {
         </div>
         <div className="text-center">
           <p className="mb-0.5 text-[10px] font-bold uppercase text-label">
-            Venda
+            Preço de venda
           </p>
           <p className="text-sm font-bold text-heading">
             {formatCents(product.sale_price_cents)}
@@ -171,14 +171,11 @@ function SearchResultRow({ product }: { product: Product }) {
         </div>
         <div className="text-center">
           <p className="mb-0.5 text-[10px] font-bold uppercase text-label">
-            Impostos
+            Custo do produto
           </p>
-          {product.government_taxes != null ? (
-            <p className="text-sm font-bold text-heading">
-              {formatTaxPercent(
-                product.government_taxes,
-                product.sale_price_cents,
-              )}
+          {product.cost_price_cents != null ? (
+            <p className="text-sm font-bold text-graphic-cost">
+              {formatCents(product.cost_price_cents)}
             </p>
           ) : (
             <p className="text-xs font-bold text-alert-text">***</p>
@@ -186,12 +183,18 @@ function SearchResultRow({ product }: { product: Product }) {
         </div>
         <div className="text-center">
           <p className="mb-0.5 text-[10px] font-bold uppercase text-label">
-            Custo
+            Impostos
           </p>
-          {product.cost_price_cents != null ? (
-            <p className="text-sm font-bold text-heading">
-              {formatCents(product.cost_price_cents)}
-            </p>
+          {product.government_taxes != null ? (
+            <div className="text-sm font-bold text-graphic-tax">
+              {formatCents(product.government_taxes)}
+              <p className="text-[10px] font-medium text-label">
+                {formatTaxPercent(
+                  product.government_taxes,
+                  product.sale_price_cents,
+                )}
+              </p>
+            </div>
           ) : (
             <p className="text-xs font-bold text-alert-text">***</p>
           )}
@@ -230,19 +233,16 @@ function SearchResultRow({ product }: { product: Product }) {
           </p>
         </div>
 
-        <div className="w-24 shrink-0 text-center">
+        <div className="w-28 shrink-0 text-center">
           <p className="text-sm font-bold text-heading">
             {formatCents(product.sale_price_cents)}
           </p>
         </div>
 
-        <div className="w-24 shrink-0 text-center">
-          {product.government_taxes != null ? (
-            <p className="text-sm font-bold text-heading">
-              {formatTaxPercent(
-                product.government_taxes,
-                product.sale_price_cents,
-              )}
+        <div className="w-28 shrink-0 text-center">
+          {product.cost_price_cents != null ? (
+            <p className="text-sm font-bold text-graphic-cost">
+              {formatCents(product.cost_price_cents)}
             </p>
           ) : (
             <p className="text-xs font-bold text-alert-text">***</p>
@@ -250,10 +250,16 @@ function SearchResultRow({ product }: { product: Product }) {
         </div>
 
         <div className="w-24 shrink-0 text-center">
-          {product.cost_price_cents != null ? (
-            <p className="text-sm font-bold text-heading">
-              {formatCents(product.cost_price_cents)}
-            </p>
+          {product.government_taxes != null ? (
+            <div className="text-sm font-bold text-graphic-tax">
+              {formatCents(product.government_taxes)}
+              <p className="text-[10px] font-medium text-label">
+                {formatTaxPercent(
+                  product.government_taxes,
+                  product.sale_price_cents,
+                )}
+              </p>
+            </div>
           ) : (
             <p className="text-xs font-bold text-alert-text">***</p>
           )}
@@ -506,14 +512,14 @@ export default async function Products({
                 <span className="w-20 shrink-0 text-center text-[10px] font-bold uppercase text-label">
                   Estoque
                 </span>
-                <span className="w-24 shrink-0 text-center text-[10px] font-bold uppercase text-label">
-                  Venda
+                <span className="w-28 shrink-0 text-center text-[10px] font-bold uppercase text-label">
+                  Preço de venda
+                </span>
+                <span className="w-28 shrink-0 text-center text-[10px] font-bold uppercase text-label">
+                  Custo do produto
                 </span>
                 <span className="w-24 shrink-0 text-center text-[10px] font-bold uppercase text-label">
-                  Impostos (%)
-                </span>
-                <span className="w-24 shrink-0 text-center text-[10px] font-bold uppercase text-label">
-                  Custo
+                  Impostos
                 </span>
                 <span className="w-16 shrink-0 text-center text-[10px] font-bold uppercase text-label">
                   Status
@@ -585,7 +591,7 @@ export default async function Products({
                         </div>
                         <div className="text-center">
                           <p className="mb-0.5 text-[10px] font-bold uppercase text-label">
-                            Venda
+                            Preço de venda
                           </p>
                           <p className="text-sm font-bold text-heading">
                             {formatCents(product.sale_price_cents)}
@@ -593,14 +599,11 @@ export default async function Products({
                         </div>
                         <div className="text-center">
                           <p className="mb-0.5 text-[10px] font-bold uppercase text-label">
-                            Impostos
+                            Custo do produto
                           </p>
-                          {product.government_taxes != null ? (
-                            <p className="text-sm font-bold text-heading">
-                              {formatTaxPercent(
-                                product.government_taxes,
-                                product.sale_price_cents,
-                              )}
+                          {product.cost_price_cents != null ? (
+                            <p className="text-sm font-bold text-graphic-cost">
+                              {formatCents(product.cost_price_cents)}
                             </p>
                           ) : (
                             <p className="text-xs font-bold text-alert-text">
@@ -610,12 +613,18 @@ export default async function Products({
                         </div>
                         <div className="text-center">
                           <p className="mb-0.5 text-[10px] font-bold uppercase text-label">
-                            Custo
+                            Impostos
                           </p>
-                          {product.cost_price_cents != null ? (
-                            <p className="text-sm font-bold text-heading">
-                              {formatCents(product.cost_price_cents)}
-                            </p>
+                          {product.government_taxes != null ? (
+                            <div className="text-sm font-bold text-graphic-tax">
+                              {formatCents(product.government_taxes)}
+                              <p className="text-[10px] font-medium text-label">
+                                {formatTaxPercent(
+                                  product.government_taxes,
+                                  product.sale_price_cents,
+                                )}
+                              </p>
+                            </div>
                           ) : (
                             <p className="text-xs font-bold text-alert-text">
                               ***
@@ -662,19 +671,16 @@ export default async function Products({
                           </p>
                         </div>
 
-                        <div className="w-24 shrink-0 text-center">
+                        <div className="w-28 shrink-0 text-center">
                           <p className="text-sm font-bold text-heading">
                             {formatCents(product.sale_price_cents)}
                           </p>
                         </div>
 
-                        <div className="w-24 shrink-0 text-center">
-                          {product.government_taxes != null ? (
-                            <p className="text-sm font-bold text-heading">
-                              {formatTaxPercent(
-                                product.government_taxes,
-                                product.sale_price_cents,
-                              )}
+                        <div className="w-28 shrink-0 text-center">
+                          {product.cost_price_cents != null ? (
+                            <p className="text-sm font-bold text-graphic-cost">
+                              {formatCents(product.cost_price_cents)}
                             </p>
                           ) : (
                             <div className="flex items-center justify-center gap-1.5">
@@ -686,10 +692,16 @@ export default async function Products({
                         </div>
 
                         <div className="w-24 shrink-0 text-center">
-                          {product.cost_price_cents != null ? (
-                            <p className="text-sm font-bold text-heading">
-                              {formatCents(product.cost_price_cents)}
-                            </p>
+                          {product.government_taxes != null ? (
+                            <div className="text-sm font-bold text-graphic-tax">
+                              {formatCents(product.government_taxes)}
+                              <p className="text-[10px] font-medium text-label">
+                                {formatTaxPercent(
+                                  product.government_taxes,
+                                  product.sale_price_cents,
+                                )}
+                              </p>
+                            </div>
                           ) : (
                             <div className="flex items-center justify-center gap-1.5">
                               <span className="text-xs font-bold text-alert-text">
