@@ -7,7 +7,7 @@ export function Footer() {
       <Link href="/dashboard" className="flex items-center">
         <Logo width={50} height={50} className="w-8 h-8 md:w-12 md:h-12" />
       </Link>
-      <p className="text-xs">Todos os direitos reservados</p>
+      <p className="text-xs">ShopixTurbo - Todos os direitos reservados</p>
     </footer>
   );
 }

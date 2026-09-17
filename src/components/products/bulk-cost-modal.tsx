@@ -136,7 +136,7 @@ export function BulkCostModal({ products }: BulkCostModalProps) {
   return (
     <>
       {selectedCount > 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-card-border bg-btn-muted px-4 py-3">
+        <div className="fixed inset-x-0 top-16 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-card-border bg-btn-muted px-4 py-3 shadow-card md:left-72">
           <p className="text-sm font-bold text-heading">
             {selectedCount}{' '}
             {selectedCount === 1

@@ -21,17 +21,23 @@ export function AppShell({
   const [open, setOpen] = useState(false);
 
   return (
-    <Container>
-      <Header
-        onToggle={() => setOpen((prev) => !prev)}
-        hasStore={hasStore}
-        shopLogo={shopLogo}
-      />
-      <Sidebar open={open} onClose={() => setOpen(false)} hasStore={hasStore} />
-      <div className="col-start-1 row-start-2 flex flex-col overflow-hidden md:pl-72 print:overflow-visible print:pl-0">
-        <Main>{children}</Main>
-        <Footer />
-      </div>
-    </Container>
+    <div className="flex h-dvh flex-col overflow-hidden print:overflow-visible">
+      <Container>
+        <Header
+          onToggle={() => setOpen((prev) => !prev)}
+          hasStore={hasStore}
+          shopLogo={shopLogo}
+        />
+        <Sidebar
+          open={open}
+          onClose={() => setOpen(false)}
+          hasStore={hasStore}
+        />
+        <div className="col-start-1 row-start-2 flex flex-col overflow-hidden md:pl-72 print:overflow-visible print:pl-0">
+          <Main>{children}</Main>
+          <Footer />
+        </div>
+      </Container>
+    </div>
   );
 }
