@@ -1,3 +1,11 @@
+import { ConnectShopeeButton } from '@/components/ui/connect-shopee-button';
+import { CopyText } from '@/components/ui/copy-text';
+import { ORDER_STATUSES } from '@/components/ui/order-status-options';
+import { PlainReport } from '@/components/ui/plain-report';
+import { PrintReportButton } from '@/components/ui/print-report-button';
+import { verifySession } from '@/lib/dal';
+import { generateReportText } from '@/lib/report-text';
+import { getShopIdFromCookie, getTokenFromCookie } from '@/lib/session';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -7,14 +15,6 @@ import { HiOutlineCube } from 'react-icons/hi';
 import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
 import { LuClipboardList } from 'react-icons/lu';
 import { TbDatabaseDollar } from 'react-icons/tb';
-import { ConnectShopeeButton } from '@/components/ui/connect-shopee-button';
-import { CopyText } from '@/components/ui/copy-text';
-import { ORDER_STATUSES } from '@/components/ui/order-status-options';
-import { PlainReport } from '@/components/ui/plain-report';
-import { PrintReportButton } from '@/components/ui/print-report-button';
-import { verifySession } from '@/lib/dal';
-import { generateReportText } from '@/lib/report-text';
-import { getShopIdFromCookie, getTokenFromCookie } from '@/lib/session';
 
 interface OrderItem {
   item_id: number;
@@ -147,8 +147,6 @@ function rankLabel(index: number): string {
 }
 
 const DEFAULT_ORDER_STATUS = 'SHIPPED';
-// const DEFAULT_ORDER_STATUS = 'PROCESSED';
-// const DEFAULT_ORDER_STATUS = 'READY_TO_SHIP';
 const DEFAULT_INTERVAL_DAYS = 15;
 const DEFAULT_PAGE_SIZE = 50;
 
