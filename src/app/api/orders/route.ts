@@ -1,3 +1,4 @@
+import type { NextRequest } from 'next/server';
 import {
   DEFAULT_INTERVAL_DAYS,
   DEFAULT_ORDER_STATUS,
@@ -7,6 +8,7 @@ import {
 import type {
   Order,
   OrdersApiResponse,
+  OrdersPagination,
   OrdersSummary,
 } from '@/lib/orders-data';
 import {
@@ -14,16 +16,20 @@ import {
   getTokenFromCookie,
   verifyAuthToken,
 } from '@/lib/session';
-import type { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 const BACKEND_URL = process.env.BACKEND_URL;
-const DEFAULT_PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 20;
 const TIME_RANGE_FIELD = 'update_time';
 
 function parseOrderId(value: string | null): string | undefined {
   return value?.trim() || undefined;
+}
+
+function parseCursor(value: string | null): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
 }
 
 async function fetchSearchedOrder(
@@ -170,6 +176,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         : DEFAULT_INTERVAL_DAYS;
 
     const orderId = parseOrderId(searchParams.get('order_id'));
+    const cursor = parseCursor(searchParams.get('cursor'));
 
     let searchedOrders: OrdersApiResponse['searchedOrders'] = null;
     let orderSearchError: string | null = null;
@@ -183,7 +190,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     let report: OrdersApiResponse['report'];
 
     try {
-      const reportUrl = `${BACKEND_URL}/report/orders/${shopId}?offset=0&page_size=${DEFAULT_PAGE_SIZE}&order_status=${orderStatus}&time_range_field=${TIME_RANGE_FIELD}&interval_days=${intervalDays}`;
+      const reportUrl = `${BACKEND_URL}/report/orders/${shopId}?offset=0&page_size=${DEFAULT_PAGE_SIZE}&order_status=${orderStatus}&time_range_field=${TIME_RANGE_FIELD}&interval_days=${intervalDays}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
 
       const reportResponse = await fetch(reportUrl, {
         headers: { Authorization: `Bearer ${token}` },
@@ -207,6 +214,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         const data = (await reportResponse.json()) as {
           orders: Order[];
           summary: OrdersSummary;
+          pagination?: OrdersPagination;
         };
 
         const productImageByItemId = await resolveProductImages(
@@ -219,6 +227,7 @@ export async function GET(request: NextRequest): Promise<Response> {
           status: 'ok',
           orders: data.orders,
           summary: data.summary,
+          pagination: data.pagination ?? { more: false, next_cursor: null },
           productImageByItemId,
         };
       }

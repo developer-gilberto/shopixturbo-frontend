@@ -66,10 +66,16 @@ export interface OrderDetail {
   item_list: OrderDetailItem[];
 }
 
+export interface OrdersPagination {
+  more: boolean;
+  next_cursor: string | null;
+}
+
 export interface OrdersReportOk {
   status: 'ok';
   orders: Order[];
   summary: OrdersSummary;
+  pagination: OrdersPagination;
   productImageByItemId: Record<string, string>;
 }
 
@@ -108,14 +114,16 @@ function buildCacheKey(params: {
   orderStatus: string;
   intervalDays: string;
   orderId?: string;
+  cursor?: string;
 }): string {
-  return `${params.orderStatus}|${params.intervalDays}|${params.orderId ?? ''}`;
+  return `${params.orderStatus}|${params.intervalDays}|${params.orderId ?? ''}|${params.cursor ?? ''}`;
 }
 
 export async function fetchOrdersData(params: {
   orderStatus: string;
   intervalDays: string;
   orderId?: string;
+  cursor?: string;
 }): Promise<OrdersApiResponse> {
   const key = buildCacheKey(params);
   const cached = cache.get(key);
@@ -127,6 +135,9 @@ export async function fetchOrdersData(params: {
   });
   if (params.orderId) {
     searchParams.set('order_id', params.orderId);
+  }
+  if (params.cursor) {
+    searchParams.set('cursor', params.cursor);
   }
 
   const res = await fetch(`/api/orders?${searchParams.toString()}`, {
@@ -151,6 +162,7 @@ export function getCachedOrdersData(params: {
   orderStatus: string;
   intervalDays: string;
   orderId?: string;
+  cursor?: string;
 }): OrdersApiResponse | null {
   return cache.get(buildCacheKey(params))?.data ?? null;
 }

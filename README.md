@@ -271,6 +271,7 @@ Endpoint interno consumido pelo componente **client-side** da página de pedidos
 | `order_status`  | string | `READY_TO_SHIP`  | Status dos pedidos (de `ORDER_STATUSES`)           |
 | `interval_days` | string | `15`             | Intervalo em dias a ser consultado                 |
 | `order_id`      | string | -                | ID (order_sn) de um pedido específico para busca   |
+| `cursor`        | string | -                | Cursor da próxima página (de `pagination.next_cursor` do relatório) |
 
 **Resposta (200 OK):**
 
@@ -282,12 +283,15 @@ Endpoint interno consumido pelo componente **client-side** da página de pedidos
     "status": "ok",
     "orders": [],
     "summary": {},
+    "pagination": { "more": false, "next_cursor": null },
     "productImageByItemId": {}
   }
 }
 ```
 
 O campo `report.status` pode ser `ok`, `empty` (nenhum pedido no período/status) ou `error`. Quando `searchedOrders` não é nulo, `orderSearchError` contém a mensagem quando o pedido não é encontrado.
+
+O relatório é paginado em lotes de 20 pedidos. `report.pagination.more` indica se existem mais páginas e `report.pagination.next_cursor` deve ser enviado como `cursor` na próxima requisição para avançar de página (o `/api/orders` repassa o valor como `cursor` ao backend, que o encaminha à API da Shopee).
 
 O cache em memória (em `src/lib/orders-data.ts`) deduplica chamadas iguais dentro da mesma sessão, reduzindo idas ao backend.
 

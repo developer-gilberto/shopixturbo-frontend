@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { FaExclamationTriangle } from 'react-icons/fa';
-import { FaSackDollar } from 'react-icons/fa6';
+import { FaAngleLeft, FaAngleRight, FaSackDollar } from 'react-icons/fa6';
 import { HiOutlineCube } from 'react-icons/hi';
 import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
 import { LuClipboardList } from 'react-icons/lu';
@@ -21,6 +21,7 @@ import {
   type OrderDetail,
   type OrderItem,
   type OrdersApiResponse,
+  type OrdersPagination,
   type OrdersSummary,
   statusLabel,
 } from '@/lib/orders-data';
@@ -158,42 +159,54 @@ function SearchedOrderCard({ order }: { order: OrderDetail }) {
 
       <ul className="divide-y divide-card-border">
         {order.item_list.map((item) => (
-          <li key={item.item_id} className="flex items-center gap-3 p-4">
-            {item.image_info?.image_url ? (
-              <Image
-                src={item.image_info.image_url}
-                alt={item.item_name}
-                width={48}
-                height={48}
-                className="h-12 w-12 shrink-0 rounded-btn-input object-cover"
-              />
-            ) : (
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-btn-input bg-btn-muted text-label">
-                <HiOutlineCube className="text-xl" />
+          <li
+            key={item.item_id}
+            className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-6"
+          >
+            <div className="flex min-w-0 items-center gap-3 sm:flex-1">
+              {item.image_info?.image_url ? (
+                <Image
+                  src={item.image_info.image_url}
+                  alt={item.item_name}
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 shrink-0 rounded-btn-input object-cover"
+                />
+              ) : (
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-btn-input bg-btn-muted text-label">
+                  <HiOutlineCube className="text-xl" />
+                </div>
+              )}
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold text-body">
+                  {item.item_name}
+                </p>
+                <div className="mt-1 flex flex-col gap-1">
+                  <CopyText label="ID Produto" value={String(item.item_id)} />
+                  <CopyText label="SKU" value={item.item_sku || '-'} />
+                </div>
               </div>
-            )}
-
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-body">
-                {item.item_name}
-              </p>
-              <CopyText label="SKU" value={item.item_sku || '-'} />
             </div>
 
-            <div className="shrink-0 text-center">
-              <p className="text-[10px] font-bold uppercase text-label">Qtd</p>
-              <p className="text-sm font-bold text-heading">
-                {formatNumber(item.model_quantity_purchased)}
-              </p>
-            </div>
+            <div className="flex items-center justify-between gap-6 border-t border-card-border pt-3 sm:shrink-0 sm:justify-end sm:border-0 sm:pt-0">
+              <div className="shrink-0 text-center">
+                <p className="text-[10px] font-bold uppercase text-label">
+                  Qtd
+                </p>
+                <p className="text-sm font-bold text-heading">
+                  {formatNumber(item.model_quantity_purchased)}
+                </p>
+              </div>
 
-            <div className="w-32 shrink-0 text-right">
-              <p className="text-[10px] font-bold uppercase text-label">
-                Preço unitário
-              </p>
-              <p className="text-sm font-bold text-heading">
-                {formatBRL(item.model_discounted_price)}
-              </p>
+              <div className="w-28 shrink-0 text-right sm:w-32">
+                <p className="text-[10px] font-bold uppercase text-label">
+                  Preço unitário
+                </p>
+                <p className="text-sm font-bold text-heading">
+                  {formatBRL(item.model_discounted_price)}
+                </p>
+              </div>
             </div>
           </li>
         ))}
@@ -431,20 +444,32 @@ function ReportBody({
   orders,
   summary,
   productImageByItemId,
+  pagination,
   orderStatus,
   shopName,
   marketplace,
   userName,
   intervalDays,
+  hasPrevious,
+  navigating,
+  navigationError,
+  onPreviousPage,
+  onNextPage,
 }: {
   orders: Order[];
   summary: OrdersSummary;
   productImageByItemId: Record<string, string>;
+  pagination: OrdersPagination;
   orderStatus: string;
   shopName: string;
   marketplace: string;
   userName: string;
   intervalDays: number;
+  hasPrevious: boolean;
+  navigating: 'next' | 'previous' | null;
+  navigationError: string | null;
+  onPreviousPage: () => void;
+  onNextPage: () => void;
 }) {
   const missingCostCount = summary.orders_with_missing_cost_data.length;
   const missingProductIds = summary.products_with_missing_cost_data ?? [];
@@ -874,6 +899,47 @@ function ReportBody({
             />
           ))}
         </ul>
+
+        <div className="flex items-center justify-center gap-4 border-t border-card-border p-4 print:hidden">
+          {hasPrevious ? (
+            <button
+              type="button"
+              onClick={onPreviousPage}
+              disabled={navigating !== null}
+              className="flex items-center gap-2 rounded-btn-input bg-btn-muted px-4 py-2 text-sm font-bold text-heading transition-colors hover:bg-card-border disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FaAngleLeft />
+              {navigating === 'previous' ? 'Carregando…' : 'Anterior'}
+            </button>
+          ) : (
+            <span className="px-4 py-2 text-sm font-bold text-label opacity-40">
+              <FaAngleLeft className="mr-2 inline" /> Anterior
+            </span>
+          )}
+
+          {pagination.more && pagination.next_cursor ? (
+            <button
+              type="button"
+              onClick={onNextPage}
+              disabled={navigating !== null}
+              className="flex items-center gap-2 rounded-btn-input bg-btn-muted px-4 py-2 text-sm font-bold text-heading transition-colors hover:bg-card-border disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {navigating === 'next' ? 'Carregando…' : 'Próxima'}
+              <FaAngleRight />
+            </button>
+          ) : (
+            <span className="px-4 py-2 text-sm font-bold text-label opacity-40">
+              Próxima <FaAngleRight className="ml-2 inline" />
+            </span>
+          )}
+        </div>
+        {navigationError ? (
+          <div className="border-t border-card-border px-6 pb-4 print:hidden">
+            <p className="text-sm font-semibold text-alert-text">
+              {navigationError}
+            </p>
+          </div>
+        ) : null}
       </section>
 
       {orders.length === 0 ? (
@@ -915,9 +981,18 @@ export function OrdersContent({
     });
     return cached ? { status: 'ready', data: cached } : { status: 'loading' };
   });
+  const [pageCursors, setPageCursors] = useState<(string | null)[]>([null]);
+  const [navigating, setNavigating] = useState<'next' | 'previous' | null>(
+    null,
+  );
+  const [navigationError, setNavigationError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+
+    setPageCursors([null]);
+    setNavigating(null);
+    setNavigationError(null);
 
     setView((current) =>
       current.status === 'ready' ? current : { status: 'loading' },
@@ -947,6 +1022,80 @@ export function OrdersContent({
       cancelled = true;
     };
   }, [orderStatus, intervalDays, orderId]);
+
+  async function handleNextPage() {
+    if (view.status !== 'ready' || view.data.report.status !== 'ok') return;
+
+    const nextCursor = view.data.report.pagination.next_cursor;
+    if (!nextCursor || !view.data.report.pagination.more || navigating) return;
+
+    setNavigating('next');
+    setNavigationError(null);
+
+    try {
+      const data = await fetchOrdersData({
+        orderStatus,
+        intervalDays: String(intervalDays),
+        orderId,
+        cursor: nextCursor,
+      });
+
+      if (data.report.status === 'ok') {
+        setView((current) =>
+          current.status === 'ready'
+            ? {
+                status: 'ready',
+                data: { ...current.data, report: data.report },
+              }
+            : current,
+        );
+        setPageCursors((current) => [...current, nextCursor]);
+      } else {
+        setNavigationError(data.report.message);
+      }
+    } catch {
+      setNavigationError('Não foi possível carregar mais pedidos.');
+    } finally {
+      setNavigating(null);
+    }
+  }
+
+  async function handlePreviousPage() {
+    if (view.status !== 'ready' || view.data.report.status !== 'ok') return;
+    if (pageCursors.length <= 1 || navigating) return;
+
+    const previousCursor = pageCursors[pageCursors.length - 2];
+
+    setNavigating('previous');
+    setNavigationError(null);
+
+    try {
+      const data = await fetchOrdersData({
+        orderStatus,
+        intervalDays: String(intervalDays),
+        orderId,
+        cursor: previousCursor ?? undefined,
+      });
+
+      if (data.report.status === 'ok') {
+        setView((current) =>
+          current.status === 'ready'
+            ? {
+                status: 'ready',
+                data: { ...current.data, report: data.report },
+              }
+            : current,
+        );
+        setPageCursors((current) => current.slice(0, -1));
+      } else {
+        setNavigationError(data.report.message);
+      }
+    } catch {
+      setNavigationError('Não foi possível carregar a página anterior.');
+    } finally {
+      setNavigating(null);
+    }
+  }
 
   if (view.status === 'loading') {
     return <OrdersSkeleton />;
@@ -983,7 +1132,7 @@ export function OrdersContent({
     <>
       {orderId ? (
         <section className="overflow-hidden rounded-card bg-card-bg shadow-card">
-          <div className="flex items-center justify-between border-b border-card-border p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border p-4 sm:p-6">
             <h2 className="text-lg font-bold uppercase tracking-widest text-heading">
               Resultado da busca
             </h2>
@@ -994,7 +1143,7 @@ export function OrdersContent({
               Limpar busca
             </Link>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {orderSearchError ? (
               <Notice text={orderSearchError}>
                 <FaExclamationTriangle className="shrink-0 text-xl" />
@@ -1016,11 +1165,17 @@ export function OrdersContent({
         orders={report.orders}
         summary={report.summary}
         productImageByItemId={report.productImageByItemId}
+        pagination={report.pagination}
         orderStatus={orderStatus}
         shopName={shopName}
         marketplace={marketplace}
         userName={userName}
         intervalDays={intervalDays}
+        hasPrevious={pageCursors.length > 1}
+        navigating={navigating}
+        navigationError={navigationError}
+        onPreviousPage={handlePreviousPage}
+        onNextPage={handleNextPage}
       />
     </>
   );
