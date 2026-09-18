@@ -313,6 +313,10 @@ Fluxo:
 3. **Middleware**: `src/proxy.ts` redireciona rotas privadas sem cookie para o login.
 4. **Server Components**: `verifySession()` (em `src/lib/dal.ts`) é chamado no topo de **toda página privada** e de **toda Server Action de mutação** (`verifySession` retorna o usuário ou redireciona para `/`). Esta validação é obrigatória porque o middleware não cobre Server Actions.
 
+### Mensagem de Sucesso no Registro
+
+Ao registrar um usuário (`POST /auth/signup`), o backend retorna uma mensagem de sucesso exibida na página `/signup`, orientando o usuário a verificar a **caixa de entrada** e, caso não encontre o e-mail, a caixa de **spam**. O frontend mantém uma mensagem padrão equivalente como *fallback* em `src/actions/auth.ts` (`signUp`) para quando o backend não retorna `message`.
+
 ---
 
 ## Integração com o Backend

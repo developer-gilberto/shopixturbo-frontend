@@ -1,8 +1,8 @@
 'use server';
 
+import { storeShopId, verifyAuthToken } from '@/lib/session';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { storeShopId, verifyAuthToken } from '@/lib/session';
 
 export interface SignInFormState {
   fieldErrors?: {
@@ -198,7 +198,7 @@ export async function signUp(
     return {
       successMessage:
         body?.message ??
-        `Enviamos um email para '${email}'. Verifique sua caixa de entrada para ativar sua conta.`,
+        `Enviamos um email para '${email}'. Verifique sua caixa de entrada para ativar sua conta. Caso não esteja na caixa de entrada, verifique sua caixa de spam.`,
     };
   }
 
